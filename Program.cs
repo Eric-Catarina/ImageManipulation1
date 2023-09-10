@@ -20,15 +20,15 @@ public class DiagonalPrincipal
         buffer.DegradeLinha1();
         buffer.Save(filename);
 
-        filename = "DegradeLinha2";      
+        filename = "DegradeLinha2";
         buffer.DegradeLinha2();
         buffer.Save(filename);
 
-        filename = "DegradeColuna1";        
+        filename = "DegradeColuna1";
         buffer.DegradeColuna1();
-        buffer.Save(filename); 
+        buffer.Save(filename);
 
-        filename = "DegradeColuna2";        
+        filename = "DegradeColuna2";
         buffer.DegradeColuna2();
         buffer.Save(filename);
 
@@ -36,12 +36,20 @@ public class DiagonalPrincipal
         buffer.DegradeSeno();
         buffer.Save(filename);
 
-        filename = "DegradeCosseno";        
+        filename = "DegradeCosseno";
         buffer.DegradeCosseno();
         buffer.Save(filename);
 
-        filename = "DegradeLinear";        
+        filename = "DegradeLinear";
         buffer.DegradeLinear();
+        buffer.Save(filename);
+
+        filename = "DegradeDiagonal";
+        buffer.DegradeDiagonal();
+        buffer.Save(filename);
+
+        filename = "DegradeCircular";
+        buffer.DegradeCircular();
         buffer.Save(filename);
 
     }
@@ -49,7 +57,7 @@ public class DiagonalPrincipal
 
 class Config
 {
-    public static int WIDTH = 400;
+    public static int WIDTH = 250;
     public static int HEIGHT = 250;
     public static int MAXCOLORS = 255;
 }
@@ -178,7 +186,7 @@ public class Buffer
             {
                 int cor = (int)(((float)w / (float)Config.WIDTH) * (float)Config.MAXCOLORS);
                 float relativeWidthPosition = (InverseLerp(0, Config.WIDTH, w));
-                cor = (int)( Math.Sin(relativeWidthPosition * pi) * (float)Config.MAXCOLORS);
+                cor = (int)(Math.Sin(relativeWidthPosition * pi) * (float)Config.MAXCOLORS);
                 SetPixel(w, h, cor);
             }
         }
@@ -193,7 +201,7 @@ public class Buffer
             {
                 int cor = (int)(((float)w / (float)Config.WIDTH) * (float)Config.MAXCOLORS);
                 float relativeWidthPosition = (InverseLerp(0, Config.WIDTH, w));
-                cor = (int)( Math.Abs(Math.Cos(relativeWidthPosition * pi)) * (float)Config.MAXCOLORS);
+                cor = (int)(Math.Abs(Math.Cos(relativeWidthPosition * pi)) * (float)Config.MAXCOLORS);
                 SetPixel(w, h, cor);
             }
         }
@@ -213,6 +221,43 @@ public class Buffer
                     relativeWidthPosition = 1 - relativeWidthPosition;
                     cor = (int)(relativeWidthPosition * Config.MAXCOLORS * 2);
                 }
+                SetPixel(w, h, cor);
+            }
+        }
+    }
+    public void DegradeDiagonal()
+    {
+        for (int h = 0; h < Config.HEIGHT; h++)
+        {
+            for (int w = 0; w < Config.WIDTH; w++)
+            {
+                int cor = (int)(((((float)w / (float)Config.WIDTH) + (float)h / (float)Config.HEIGHT)) * (float)Config.MAXCOLORS);
+                SetPixel(w, h, cor);
+            }
+        }
+    }
+
+    public void DegradeCircular()
+    {
+        int GetDistance(int x1, int y1, int x2, int y2)
+        {
+            return (int)Math.Sqrt((int)Math.Pow(((double)x2 - (double)x1), 2) + Math.Pow(((double)y2 - (double)y1), 2));
+        }
+
+        for (int h = 0; h < Config.HEIGHT; h++)
+        {
+            for (int w = 0; w < Config.WIDTH; w++)
+            {
+
+                int[] center = { Config.WIDTH / 2, Config.HEIGHT / 2 };
+
+
+                int distance = GetDistance(w, h, center[0], center[1]);
+                int frameHalfDiagonal = GetDistance(0,0,center[0], center[1]);
+            
+                int cor = (int)(InverseLerp(0, frameHalfDiagonal, distance) * (float)Config.MAXCOLORS);
+                cor = Math.Abs(cor - Config.MAXCOLORS);
+
                 SetPixel(w, h, cor);
             }
         }
