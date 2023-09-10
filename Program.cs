@@ -5,6 +5,7 @@ public class DiagonalPrincipal{
     static string filename = "TexturaProcedural";
     public static void Main()
     {
+        
         /*Console.WriteLine("Informe as dimensões da imagem.");
         Console.WriteLine("Largura: ");
         Config.WIDTH = int.Parse(Console.ReadLine());
@@ -14,29 +15,29 @@ public class DiagonalPrincipal{
         Buffer buffer = new Buffer();
         //buffer.Clear(Config.MAXCOLORS);
 
-        filename = "DegradeLinha1";
-        buffer.DegradeLinha1();
-        buffer.Save(filename);
+        // filename = "DegradeLinha1";
+        // buffer.DegradeLinha1();
+        // buffer.Save(filename);
 
-        filename = "DegradeLinha2";      
-        buffer.DegradeLinha2();
-        buffer.Save(filename);
+        // filename = "DegradeLinha2";      
+        // buffer.DegradeLinha2();
+        // buffer.Save(filename);
         
-        filename = "DegradeColuna1";        
-        buffer.DegradeColuna1();
-        buffer.Save(filename); 
+        // filename = "DegradeColuna1";        
+        // buffer.DegradeColuna1();
+        // buffer.Save(filename); 
 
-        filename = "DegradeColuna2";        
-        buffer.DegradeColuna2();
-        buffer.Save(filename);
+        // filename = "DegradeColuna2";        
+        // buffer.DegradeColuna2();
+        // buffer.Save(filename);
 
         filename = "DegradeSeno";        
         buffer.DegradeSeno();
         buffer.Save(filename);
 
-        filename = "DegradeCosseno";        
-        buffer.DegradeCosseno();
-        buffer.Save(filename);
+        // // filename = "DegradeCosseno";        
+        // // buffer.DegradeCosseno();
+        // // buffer.Save(filename);
         
     }
 }
@@ -58,6 +59,7 @@ class SaveImage {
 
 public class Buffer {   //** FRAME BUFFER
     public int[,] frame;
+    
     public Buffer(){
         frame = new int[Config.WIDTH, Config.HEIGHT];
     }
@@ -77,8 +79,13 @@ public class Buffer {   //** FRAME BUFFER
     int Clamp(int v, int min, int max){
         return (v < min)? min : (v > max)? max : v;
     }
-    int Lerp(int min, int max, float t){
-        return (int)(min + (max - min) * t);
+
+    float Lerp(float min, float max, float t){
+        return (min + (max - min) * t);
+    }
+
+    float InverseLerp(float min, float max, float t){
+        return (t - min) / (max - min);
     }
     public override string ToString(){
         string s = "";
@@ -97,22 +104,51 @@ public class Buffer {   //** FRAME BUFFER
     public void DegradeLinha1(){
         for (int h = 0; h < Config.HEIGHT; h++){
             for (int w = 0; w < Config.WIDTH; w++){
-                    int cor = (int) (((float) w / (float)Config.WIDTH) * (float) Config.MAXCOLORS);
+                    int cor = (int)(((float)w/(float)Config.WIDTH) * (float)Config.MAXCOLORS);
                     SetPixel(w, h, cor); 
             }
         }
     }    
     public void DegradeLinha2(){
-
+       for (int h = 0; h < Config.HEIGHT; h++){
+            for (int w = 0; w < Config.WIDTH; w++){
+                    int cor = (int)(((float)w/(float)Config.WIDTH) * (float)Config.MAXCOLORS);
+                    cor = Math.Abs(cor - Config.MAXCOLORS);
+                    SetPixel(w, h, cor); 
+            }
+        }
     }
     public void DegradeColuna1(){
-
+        for (int h = 0; h < Config.HEIGHT; h++){
+            for (int w = 0; w < Config.WIDTH; w++){
+                    int cor = (int)(((float)h/(float)Config.HEIGHT) * (float)Config.MAXCOLORS);
+                    SetPixel(w, h, cor); 
+            }
+        }
     }    
     public void DegradeColuna2(){
-
+        for (int h = 0; h < Config.HEIGHT; h++){
+            for (int w = 0; w < Config.WIDTH; w++){
+                    int cor = (int)(((float)h/(float)Config.HEIGHT) * (float)Config.MAXCOLORS);
+                    cor = Math.Abs(cor-Config.MAXCOLORS);
+                    SetPixel(w, h, cor); 
+            }
+        }
     }
     public void DegradeSeno(){
+        float pi = 3.1415f;
 
+        for (int h = 0; h < Config.HEIGHT; h++){
+            for (int w = 0; w < Config.WIDTH; w++){
+                int cor = (int)(((float)w/(float)Config.WIDTH) * (float)Config.MAXCOLORS);
+                float relativeWidthPosition = (InverseLerp(0, Config.WIDTH, w));
+
+                double seno = (double)Math.Sin((double)( Lerp(0, pi, relativeWidthPosition)));
+                cor = (int)(seno * (float)Config.MAXCOLORS);
+
+                SetPixel(w, h, cor); 
+            }
+        }
     }      
     public void DegradeCosseno(){
 
